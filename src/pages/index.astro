@@ -1,11 +1,105 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+// filepath: /C:/Users/dient/Desktop/Proyectos/FuturistPokeFetch/src/pages/index.astro
+import Layout from "../layouts/Layout.astro";
+import "../styles/global.css";
+import PokemonCard from "../components/PokemonCard.astro";
+import { limitPokemonsToFetch } from "../utils/utils";
+import type {
+  ResponseAllPokemons,
+  AllPokemonsURL,
+  OnePokemonURL,
+  IPokemonCard,
+  PokemonDataResponsed,
+  PokemonAbility,
+  Result,
+} from "../types/index";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const allPokemonsURL: AllPokemonsURL = `https://pokeapi.co/api/v2/pokemon?limit=${limitPokemonsToFetch}&offset=0`;
+const response = await fetch(allPokemonsURL);
+const data: ResponseAllPokemons = await response.json();
+
+async function fetchInstancedPokemon(
+  pokemonName: Result["name"]
+): Promise<IPokemonCard> {
+  const url: OnePokemonURL = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
+  const response = await fetch(url);
+  const dataOnePokemon: PokemonDataResponsed = await response.json();
+
+  const pokemon: IPokemonCard = {
+    name: dataOnePokemon.name,
+    id: dataOnePokemon.id,
+    image: dataOnePokemon.sprites.front_default,
+    abilities: dataOnePokemon.abilities.map((ability): PokemonAbility => {
+      return {
+        name: ability.ability.name,
+      };
+    }),
+    weight: dataOnePokemon.weight,
+    species: dataOnePokemon.species,
+    types: dataOnePokemon.types,
+  };
+
+  return pokemon;
+}
+
+const pokemons = await Promise.all(
+  data.results.map((result) => fetchInstancedPokemon(result.name))
+);
 ---
 
 <Layout>
-	<Welcome />
+  <section class="fixed w-screen h-screen z-0">
+    <div
+      class="bolita--1 absolute bg-pink-600/20 w-60 h-full rounded-full -left-30 top-0 blur-3xl"
+    >
+    </div>
+    <div
+      class="bolita--2 absolute bg-teal-200/20 w-60 h-full rounded-full -right-30 top-0 blur-3xl"
+    >
+    </div>
+    <div class="bolita--3"></div>
+  </section>
+  <header
+    class="w-full h-20 flex items-center justify-center from-stone-800/70 via-stone-400/70 to-transparent bg-gradient-to-b sticky top-0 z-50"
+  >
+    <h1
+      class="text-4xl font-black bg-gradient-to-r from-rose-100 to-teal-100 bg-clip-text text-transparent"
+    >
+      Poke Arias
+    </h1>
+  </header>
+  <main
+    class="container flex flex-wrap justify-center gap-20 w-full min-h-screen h-auto"
+  >
+    {pokemons.map((pokemon) => <PokemonCard pokemon={pokemon} />)}
+  </main>
 </Layout>
+
+<script>
+  function Main() {
+    observerPokemonCard();
+  }
+
+  const observerPokemonCard = () => {
+    const pokemonCardImages = document.querySelectorAll(".pokemon-card-image");
+
+    const observerPokemon = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && entry.target instanceof HTMLImageElement) {
+          const dataSrc = entry.target.getAttribute("data-src");
+          if (dataSrc) {
+            entry.target.src = dataSrc;
+            observer.unobserve(entry.target);
+          }
+
+        }
+      });
+    });
+
+    pokemonCardImages.forEach((pokemonCardImage) => {
+      observerPokemon.observe(pokemonCardImage);
+    });
+  };
+
+  document.addEventListener("astro:page-load", Main);
+</script>

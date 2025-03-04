@@ -98,7 +98,7 @@ function getSVGStats(statName :string){
                 pokemon.id == prevPagePokemon ?(
                     null
                 ) : ( 
-                    <a href={`/pokemon/${prevPagePokemon}`} class=" absolute top-1/2 -translate-y-1/2 left-3">
+                    <a data-astro-prefetch="hover" href={`/pokemon/${prevPagePokemon}`} class=" absolute top-1/2 -translate-y-1/2 left-3">
                     <svg   xmlns="http://www.w3.org/2000/svg"  width="40"  height="40"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left-dashed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h6m3 0h1.5m3 0h.5" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
                     </a>
                 )
@@ -109,7 +109,7 @@ function getSVGStats(statName :string){
                     null
                 ) : ( 
                     
-                    <a href={`/pokemon/${nextPagePokemon}`} class=" absolute top-1/2 -translate-y-1/2 right-3">
+                    <a data-astro-prefetch="hover" href={`/pokemon/${nextPagePokemon}`} class=" absolute top-1/2 -translate-y-1/2 right-3">
                         <svg class=" absolute top-1/2 -translate-y-1/2 right-3"  xmlns="http://www.w3.org/2000/svg"  width="40"  height="40"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right-dashed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h.5m3 0h1.5m3 0h6" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
                     </a>
                     
@@ -132,7 +132,7 @@ function getSVGStats(statName :string){
                         pokemon.id == prevPagePokemon ?(
                             null
                         ) : ( 
-                            <a href={`/pokemon/${prevPagePokemon}`} class=" z-20 absolute top-1/2 -translate-y-1/2 left-3">
+                            <a data-astro-prefetch="hover" href={`/pokemon/${prevPagePokemon}`} class=" z-20 absolute top-1/2 -translate-y-1/2 left-3">
                             <svg   xmlns="http://www.w3.org/2000/svg"  width="40"  height="40"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left-dashed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h6m3 0h1.5m3 0h.5" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
                             </a>
                         )
@@ -143,7 +143,7 @@ function getSVGStats(statName :string){
                             null
                         ) : ( 
                             
-                            <a href={`/pokemon/${nextPagePokemon}`} class=" z-20 absolute top-1/2 -translate-y-1/2 right-3">
+                            <a data-astro-prefetch="hover" href={`/pokemon/${nextPagePokemon}`} class=" z-20 absolute top-1/2 -translate-y-1/2 right-3">
                                 <svg class=" absolute top-1/2 -translate-y-1/2 right-3"  xmlns="http://www.w3.org/2000/svg"  width="40"  height="40"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right-dashed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h.5m3 0h1.5m3 0h6" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
                             </a>
                             

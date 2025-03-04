@@ -16,9 +16,9 @@ const {bgColor, textColor} = getPokemonColors(pokemon );
 <!-- bg-black/70 -->
 <article
 transition:name={pokemon.name}
-  class={`${bgColor}   hover:brightness-105 hover:backdrop-blur-sm relative overflow-hidden shrink-0 flex items-center justify-center   w-60 h-60 rounded-2xl`}
+  class={`${bgColor} w-40 h-40   md:w-60 md:h-60   hover:brightness-105 hover:backdrop-blur-sm relative overflow-hidden shrink-0 flex items-center justify-center  rounded-2xl`}
 >
-<a href={`/pokemon/${pokemon.name}`}>
+<a href={`/pokemon/${pokemon.id}`}>
     <img src="" alt="" class="pokemon-card-image h-2/4 select-none" data-src={pokemon.image}  />
   <div
     class="absolute inset-0 w-full h-full select-none bg-gradient-to-t from-stone-400/20 to-transparent flex items-center justify-center"

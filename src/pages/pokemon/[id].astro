@@ -1,0 +1,220 @@
+---
+import "../../styles/global.css";
+import Layout from "../../layouts/Layout.astro";
+import type { OnePokemonURL, IPokemonCard, PokemonDataResponsed, PokemonAbility, ResponseAllPokemons } from "../../types/index";
+import { getPokemonColors , limitPokemonsToFetch} from "../../utils/utils";
+export async function getStaticPaths() {
+    const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limitPokemonsToFetch}`); // Adjust the limit as needed
+    const data :ResponseAllPokemons  = await response.json();
+    const paths = data.results.map(async pokemon =>{
+
+        const response = await fetch(pokemon.url);
+        const dataOnePokemon: PokemonDataResponsed = await response.json();
+        return {
+            params: {
+                id: dataOnePokemon.id.toString(),
+            },
+        };
+    });
+    
+
+
+    return Promise.all(paths);
+}
+
+
+const { id } = Astro.params;
+const url: OnePokemonURL = `https://pokeapi.co/api/v2/pokemon/${id}`;
+const response = await fetch(url);
+const dataOnePokemon: PokemonDataResponsed = await response.json();
+
+const pokemon: IPokemonCard = {
+    name: dataOnePokemon.name,
+    id: dataOnePokemon.id,
+    image: dataOnePokemon.sprites.front_default,
+    backImage: dataOnePokemon.sprites.back_default,
+    abilities: dataOnePokemon.abilities.map((ability): PokemonAbility => {
+        return {
+            name: ability.ability.name,
+        };
+    }),
+    weight: dataOnePokemon.weight,
+    species: dataOnePokemon.species,
+    types: dataOnePokemon.types,
+    stats : dataOnePokemon.stats,
+    height: dataOnePokemon.height
+};
+const {bgColor, textColor , gradientHeader, gradientFooter,secondBgcolor} = getPokemonColors(pokemon );
+
+
+//Calcular pagina siguiente y anterior
+const nextPagePokemon = limitPokemonsToFetch > parseInt(id)  ? parseInt(id) + 1 : id;
+const prevPagePokemon = 0 < parseInt(id) - 1 ? parseInt(id) - 1 : id;
+
+function getSVGStats(statName :string){
+    
+    switch (statName){
+        case "hp":
+            return '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-heart"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" /></svg>';
+        case "attack":
+            return '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-sword"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M20 4v5l-9 7l-4 4l-3 -3l4 -4l7 -9z" /><path d="M6.5 11.5l6 6" /></svg>';
+        case "defense":
+            return '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="currentColor"  class="icon icon-tabler icons-tabler-filled icon-tabler-shield"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.884 2.007l.114 -.007l.118 .007l.059 .008l.061 .013l.111 .034a.993 .993 0 0 1 .217 .112l.104 .082l.255 .218a11 11 0 0 0 7.189 2.537l.342 -.01a1 1 0 0 1 1.005 .717a13 13 0 0 1 -9.208 16.25a1 1 0 0 1 -.502 0a13 13 0 0 1 -9.209 -16.25a1 1 0 0 1 1.005 -.717a11 11 0 0 0 7.531 -2.527l.263 -.225l.096 -.075a.993 .993 0 0 1 .217 -.112l.112 -.034a.97 .97 0 0 1 .119 -.021z" /></svg>';
+        case "special-attack":
+            return '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-swords"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M21 3v5l-11 9l-4 4l-3 -3l4 -4l9 -11z" /><path d="M5 13l6 6" /><path d="M14.32 17.32l3.68 3.68l3 -3l-3.365 -3.365" /><path d="M10 5.5l-2 -2.5h-5v5l3 2.5" /></svg>';
+        case "special-defense":
+        return '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-shield-star"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.143 20.743a12 12 0 0 1 -7.643 -14.743a12 12 0 0 0 8.5 -3a12 12 0 0 0 8.5 3c.504 1.716 .614 3.505 .343 5.237" /><path d="M17.8 20.817l-2.172 1.138a.392 .392 0 0 1 -.568 -.41l.415 -2.411l-1.757 -1.707a.389 .389 0 0 1 .217 -.665l2.428 -.352l1.086 -2.193a.392 .392 0 0 1 .702 0l1.086 2.193l2.428 .352a.39 .39 0 0 1 .217 .665l-1.757 1.707l.414 2.41a.39 .39 0 0 1 -.567 .411l-2.172 -1.138z" /></svg>';
+        case "speed":
+            return '<svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-brand-speedtest"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5.636 19.364a9 9 0 1 1 12.728 0" /><path d="M16 9l-4 4" /></svg>';
+        default:
+            return '<p>Stat not found</p>';
+    }
+}
+---
+
+<Layout>
+    <div class={`${gradientHeader} fixed w-full h-20 flex items-center justify-center  to-transparent bg-gradient-to-b top-0 z-50`}>
+       
+          
+          
+    </div>
+    <!-- <section class=" fixed w-screen h-screen -z-100   ">
+        <div class="bolita--1 w-40 h-40 absolute rounded-full bg-red-300 top-1/6 left-[46%] mix-blend-multiply animate-breathe blur-2xl "></div>
+        <div class="bolita--2  w-40 h-40 absolute rounded-full bg-green-300 top-[30%] left-[50%]  mix-blend-multiply animate-breathe blur-2xl "></div>
+        <div class="bolita--3  w-40 h-40 absolute rounded-full bg-blue-300 top-[30%] left-[40%]  mix-blend-multiply animate-breathe blur-2xl"></div>
+    </section> -->
+    <header class={` fixed w-full h-20 flex items-center justify-center from-${bgColor} to-transparent bg-gradient-to-b  top-0 z-[100]`}>
+        <a class="absolute left-4 ml-4 cursor-pointer text-white" href="/"> 
+          
+            <svg  class="h-10 w-10 drop-shadow-2xl"  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none" stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-back-up"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" /></svg>
+        </a>
+        <h1 class={`${textColor}  text-4xl font-black uppercase bg-clip-text ${gradientHeader} `}>{pokemon.name} <span class=" text-white/90 drop-shadow-2xl font-bold"> #{pokemon.id}</span> </h1>
+    </header >
+    <main class={`${bgColor} relative   flex flex-col items-center justify-around gap-1 w-full min-h-screen  h-screen py-20  `}>
+        <div class={` hidden md:block w-full h-full inset-0 absolute ${textColor} `}>
+            <img src="/src/assets/pokedex.svg" alt="" class=" opacity-70 absolute hidden md:block right-20 top-10 " >
+
+            {
+                pokemon.id == prevPagePokemon ?(
+                    null
+                ) : ( 
+                    <a href={`/pokemon/${prevPagePokemon}`} class=" absolute top-1/2 -translate-y-1/2 left-3">
+                    <svg   xmlns="http://www.w3.org/2000/svg"  width="40"  height="40"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left-dashed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h6m3 0h1.5m3 0h.5" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
+                    </a>
+                )
+            }
+
+            {
+                pokemon.id == nextPagePokemon ?(
+                    null
+                ) : ( 
+                    
+                    <a href={`/pokemon/${nextPagePokemon}`} class=" absolute top-1/2 -translate-y-1/2 right-3">
+                        <svg class=" absolute top-1/2 -translate-y-1/2 right-3"  xmlns="http://www.w3.org/2000/svg"  width="40"  height="40"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right-dashed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h.5m3 0h1.5m3 0h6" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+                    </a>
+                    
+                )
+            }
+
+           
+
+           
+        </div>
+
+        <div class="w-full flex items-center justify-center">
+            <img src="/src/assets/pokedex.svg" alt="" class=" opacity-55 absolute md:hidden " >
+
+            <article class={`md:${bgColor} relative overflow-hidden shrink-0 flex items-center justify-center
+              w-full md:w-60 h-60 md:rounded-2xl`} transition:name={pokemon.name}>
+
+                <div class={` md:hidden w-full h-full inset-0 absolute ${textColor} `}>
+                    {
+                        pokemon.id == prevPagePokemon ?(
+                            null
+                        ) : ( 
+                            <a href={`/pokemon/${prevPagePokemon}`} class=" z-20 absolute top-1/2 -translate-y-1/2 left-3">
+                            <svg   xmlns="http://www.w3.org/2000/svg"  width="40"  height="40"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-left-dashed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h6m3 0h1.5m3 0h.5" /><path d="M5 12l6 6" /><path d="M5 12l6 -6" /></svg>
+                            </a>
+                        )
+                    }
+        
+                    {
+                        pokemon.id == nextPagePokemon ?(
+                            null
+                        ) : ( 
+                            
+                            <a href={`/pokemon/${nextPagePokemon}`} class=" z-20 absolute top-1/2 -translate-y-1/2 right-3">
+                                <svg class=" absolute top-1/2 -translate-y-1/2 right-3"  xmlns="http://www.w3.org/2000/svg"  width="40"  height="40"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-right-dashed"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 12h.5m3 0h1.5m3 0h6" /><path d="M13 18l6 -6" /><path d="M13 6l6 6" /></svg>
+                            </a>
+                            
+                        )
+                    }
+        
+                </div>
+                <img src={pokemon.image} alt="" class="h-2/4 select-none"  />
+                <div class="absolute inset-0 w-full h-full select-none md:bg-gradient-to-t from-stone-400/20 to-transparent flex items-center justify-center">
+                    <h2 class={` hidden  md:text-3xl font-bold uppercase -z-20 absolute top-0  ${textColor}`}>{pokemon.name}</h2>
+                    <div class="absolute h-14 w-full flex items-center justify-center bottom-0">
+                        {
+                            pokemon.types.map((type) => {
+                                return (
+                                    <span class={`bg-white/50 text-xs font-bold px-2 py-1 rounded-full mx-1 ${textColor}`}>{type.type.name}</span>
+                                );
+                            })
+    
+                        }
+                    </div>
+                </div>
+            </article>
+        </div>
+        <div class="w-full h-full md:w-1/2  basis-10/12 ">
+            <article class=" w-[95%] md:container mx-auto h-full  bg-white/70 rounded-2xl p-4">
+                <div class=" w-full flex items-center justify-center rounded-2xl py-1
+                [&>div]:h-full [&>div]:flex [&>div]:flex-col [&>div]:items-center [&>div]:justify-center  [&>div]:basis-1/3 [&>div>h3]:font-bold
+                ">
+                    <div class=" border-r-2 border-gray-300">
+                        <h3>Weight</h3>
+                        <p>{pokemon.weight} g</p>
+
+                    </div>
+                    <div class=" border-r-2 border-gray-300">
+                        <h3>Height</h3>
+                        <p>{pokemon.height} cm</p>
+
+
+                    </div>
+                    <div>
+                        <h3>
+                            Unique ID
+                        </h3>
+                        <p>{pokemon.id}</p>
+                    </div>
+                </div>
+                <div class=" w-full h-full">
+                    {pokemon.stats.map((stat: { stat: { name: string }, base_stat: number }) => {
+                        return (
+                            <div class="w-full h-10 flex items-center justify-center">
+                                <h3 class={`w-1/5 y text-center ${textColor} flex items-center justify-center `}><Fragment set:html={getSVGStats(stat.stat.name)} /></h3>
+                                
+                                <div class="w-4/5 h-3 bg-gray-300 rounded-full">
+                                    <div class={` h-full ${secondBgcolor}  rounded-full`} style={`width:${stat.base_stat > 100 ? 100 : stat.base_stat }%;`}></div>
+                                </div>
+                            </div>
+                            
+                        );
+                    })}
+                </div>
+            </article>
+        </div>
+       
+        
+
+
+
+      
+
+        
+    </main>
+    <footer class=`${gradientFooter} w-full h-20 fixed bottom-0 via-transparent to-transparent bg-gradient-to-t -z-50`> 
+    </footer>
+</Layout>

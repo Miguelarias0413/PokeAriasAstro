@@ -18,6 +18,7 @@ export type IPokemonCard = {
     name   : string
     id: number
     image  : string
+    backImage: string
     abilities : PokemonAbility[]
     species : {
         name: string
@@ -25,6 +26,8 @@ export type IPokemonCard = {
     }
     types: PokemonType[]
     weight : number
+    height : number
+    stats:Stat[]
 }
 
 type PokemonAbility = {

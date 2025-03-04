@@ -29,14 +29,17 @@ async function fetchInstancedPokemon(
     name: dataOnePokemon.name,
     id: dataOnePokemon.id,
     image: dataOnePokemon.sprites.front_default,
+    backImage: dataOnePokemon.sprites.back_default,
     abilities: dataOnePokemon.abilities.map((ability): PokemonAbility => {
       return {
         name: ability.ability.name,
       };
     }),
     weight: dataOnePokemon.weight,
+    height: dataOnePokemon.height,
     species: dataOnePokemon.species,
     types: dataOnePokemon.types,
+    stats : dataOnePokemon.stats
   };
 
   return pokemon;
@@ -69,7 +72,7 @@ const pokemons = await Promise.all(
     </h1>
   </header>
   <main
-    class="container flex flex-wrap justify-center gap-20 w-full min-h-screen h-auto"
+    class=" flex flex-wrap justify-center gap-10 md:gap-20 w-full min-h-screen h-auto"
   >
     {pokemons.map((pokemon) => <PokemonCard pokemon={pokemon} />)}
   </main>
@@ -94,7 +97,12 @@ const pokemons = await Promise.all(
 
         }
       });
-    });
+    },{
+      root: document.querySelector("#scrollArea"),
+      rootMargin: "20px",
+      threshold: 1.0,
+    }
+);
 
     pokemonCardImages.forEach((pokemonCardImage) => {
       observerPokemon.observe(pokemonCardImage);

@@ -1,6 +1,6 @@
 import type {IPokemonCard} from "../types/index"
 
-export const limitPokemonsToFetch = 200;
+export const limitPokemonsToFetch = 100;
 
 export function getPokemonColors(pokemon: IPokemonCard): {
   bgColor: string;

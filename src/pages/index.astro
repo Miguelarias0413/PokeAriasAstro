@@ -1,55 +1,60 @@
 ---
 // filepath: /C:/Users/dient/Desktop/Proyectos/FuturistPokeFetch/src/pages/index.astro
-import Layout from "../layouts/Layout.astro";
-import "../styles/global.css";
-import PokemonCard from "../components/PokemonCard.astro";
-import { limitPokemonsToFetch } from "../utils/utils";
-import type {
-  ResponseAllPokemons,
-  AllPokemonsURL,
-  OnePokemonURL,
-  IPokemonCard,
-  PokemonDataResponsed,
-  PokemonAbility,
-  Result,
-} from "../types/index";
+// import Layout from "../layouts/Layout.astro";
+// import "../styles/global.css";
+// import PokemonCard from "../components/PokemonCard.astro";
+// import { limitPokemonsToFetch } from "../utils/utils";
+// import type {
+//   ResponseAllPokemons,
+//   AllPokemonsURL,
+//   OnePokemonURL,
+//   IPokemonCard,
+//   PokemonDataResponsed,
+//   PokemonAbility,
+//   Result,
+// } from "../types/index";
 
-const allPokemonsURL: AllPokemonsURL = `https://pokeapi.co/api/v2/pokemon?limit=${limitPokemonsToFetch}&offset=0`;
-const response = await fetch(allPokemonsURL);
-const data: ResponseAllPokemons = await response.json();
+// const allPokemonsURL: AllPokemonsURL = `https://pokeapi.co/api/v2/pokemon?limit=${limitPokemonsToFetch}&offset=0`;
+// const response = await fetch(allPokemonsURL);
+// const data: ResponseAllPokemons = await response.json();
 
-async function fetchInstancedPokemon(
-  pokemonName: Result["name"]
-): Promise<IPokemonCard> {
-  const url: OnePokemonURL = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
-  const response = await fetch(url);
-  const dataOnePokemon: PokemonDataResponsed = await response.json();
+// async function fetchInstancedPokemon(
+//   pokemonName: Result["name"]
+// ): Promise<IPokemonCard> {
+//   const url: OnePokemonURL = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
+//   const response = await fetch(url);
+//   const dataOnePokemon: PokemonDataResponsed = await response.json();
 
-  const pokemon: IPokemonCard = {
-    name: dataOnePokemon.name,
-    id: dataOnePokemon.id,
-    image: dataOnePokemon.sprites.front_default,
-    backImage: dataOnePokemon.sprites.back_default,
-    abilities: dataOnePokemon.abilities.map((ability): PokemonAbility => {
-      return {
-        name: ability.ability.name,
-      };
-    }),
-    weight: dataOnePokemon.weight,
-    height: dataOnePokemon.height,
-    species: dataOnePokemon.species,
-    types: dataOnePokemon.types,
-    stats : dataOnePokemon.stats
-  };
+//   const pokemon: IPokemonCard = {
+//     name: dataOnePokemon.name,
+//     id: dataOnePokemon.id,
+//     image: dataOnePokemon.sprites.front_default,
+//     backImage: dataOnePokemon.sprites.back_default,
+//     abilities: dataOnePokemon.abilities.map((ability): PokemonAbility => {
+//       return {
+//         name: ability.ability.name,
+//       };
+//     }),
+//     weight: dataOnePokemon.weight,
+//     height: dataOnePokemon.height,
+//     species: dataOnePokemon.species,
+//     types: dataOnePokemon.types,
+//     stats : dataOnePokemon.stats
+//   };
 
-  return pokemon;
-}
+//   return pokemon;
+// }
 
-const pokemons = await Promise.all(
-  data.results.map((result) => fetchInstancedPokemon(result.name))
-);
+// const pokemons = await Promise.all(
+//   data.results.map((result) => fetchInstancedPokemon(result.name))
+// );
+
+// import { redirect } from "astro:redirect";
+
+// redirect("/nueva-ruta");
 ---
 
+<!-- 
 <Layout>
   <section class="fixed w-screen h-screen z-0">
     <div
@@ -76,38 +81,41 @@ const pokemons = await Promise.all(
   >
     {pokemons.map((pokemon) => <PokemonCard pokemon={pokemon} />)}
   </main>
-</Layout>
+</Layout> -->
+<script >
+  window.location.replace("/pokemon/page/1");
+  // function Main() {
+  // }
 
-<script>
-  function Main() {
-    observerPokemonCard();
-  }
+  // // const observerPokemonCard = () => {
+  // //   const pokemonCardImages = document.querySelectorAll(".pokemon-card-image");
 
-  const observerPokemonCard = () => {
-    const pokemonCardImages = document.querySelectorAll(".pokemon-card-image");
+  // //   const observerPokemon = new IntersectionObserver(
+  // //     (entries, observer) => {
+  // //       entries.forEach((entry) => {
+  // //         if (
+  // //           entry.isIntersecting &&
+  // //           entry.target instanceof HTMLImageElement
+  // //         ) {
+  // //           const dataSrc = entry.target.getAttribute("data-src");
+  // //           if (dataSrc) {
+  // //             entry.target.src = dataSrc;
+  // //             observer.unobserve(entry.target);
+  // //           }
+  // //         }
+  // //       });
+  // //     },
+  // //     {
+  // //       root: document.querySelector("#scrollArea"),
+  // //       rootMargin: "20px",
+  // //       threshold: 1.0,
+  // //     }
+  // //   );
 
-    const observerPokemon = new IntersectionObserver((entries, observer) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting && entry.target instanceof HTMLImageElement) {
-          const dataSrc = entry.target.getAttribute("data-src");
-          if (dataSrc) {
-            entry.target.src = dataSrc;
-            observer.unobserve(entry.target);
-          }
+  // //   pokemonCardImages.forEach((pokemonCardImage) => {
+  // //     observerPokemon.observe(pokemonCardImage);
+  // //   });
+  // // };
 
-        }
-      });
-    },{
-      root: document.querySelector("#scrollArea"),
-      rootMargin: "20px",
-      threshold: 1.0,
-    }
-);
-
-    pokemonCardImages.forEach((pokemonCardImage) => {
-      observerPokemon.observe(pokemonCardImage);
-    });
-  };
-
-  document.addEventListener("astro:page-load", Main);
+  // document.addEventListener("astro:page-load", Main);
 </script>

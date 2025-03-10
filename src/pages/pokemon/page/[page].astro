@@ -1,0 +1,159 @@
+---
+// filepath: c:\Users\dient\Desktop\Proyectos\FuturistPokeFetch\src\pages\pokemon\page\[page].astro
+import type { GetStaticPaths } from "astro";
+import Layout from "../../../layouts/Layout.astro";
+import "../../../styles/global.css";
+import PokemonCard from "../../../components/PokemonCard.astro";
+import { limitPokemonsToFetch } from "../../../utils/utils";
+import type {
+  ResponseAllPokemons,
+  AllPokemonsURL,
+  OnePokemonURL,
+  IPokemonCard,
+  PokemonDataResponsed,
+  PokemonAbility,
+  Result,
+} from "../../../types/index";
+
+export async function getStaticPaths({ paginate }: { paginate: Function }) {
+  const allPokemonsURL: AllPokemonsURL = `https://pokeapi.co/api/v2/pokemon?limit=${limitPokemonsToFetch}&offset=0`;
+  let data: ResponseAllPokemons;
+
+  try {
+    const response = await fetch(allPokemonsURL);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    data = await response.json();
+  } catch (error) {
+    console.error("Failed to fetch allPokemonsURL:", error);
+    throw error;
+  }
+
+  console.log(data.results);
+
+  async function fetchInstancedPokemon(
+    pokemonName: Result["name"]
+  ): Promise<IPokemonCard> {
+    const url: OnePokemonURL = `https://pokeapi.co/api/v2/pokemon/${pokemonName}`;
+    let dataOnePokemon: PokemonDataResponsed;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      dataOnePokemon = await response.json();
+    } catch (error) {
+      console.error(`Failed to fetch pokemon data for ${pokemonName}:`, error);
+      throw error;
+    }
+
+    const pokemon: IPokemonCard = {
+      name: dataOnePokemon.name,
+      id: dataOnePokemon.id,
+      image: dataOnePokemon.sprites.front_default,
+      backImage: dataOnePokemon.sprites.back_default,
+      abilities: dataOnePokemon.abilities.map((ability): PokemonAbility => {
+        return {
+          name: ability.ability.name,
+        };
+      }),
+      weight: dataOnePokemon.weight,
+      height: dataOnePokemon.height,
+      species: dataOnePokemon.species,
+      types: dataOnePokemon.types,
+      stats: dataOnePokemon.stats,
+    };
+
+    return pokemon;
+  }
+
+  const pokemons = await Promise.all(
+    data.results.map( async (result) => await fetchInstancedPokemon(result.name))
+  );
+
+  return paginate(pokemons, { pageSize: 16 });
+}
+
+const { page } = Astro.props as {
+  page: { data: IPokemonCard[]; url: { prev?: string; next?: string } };
+};
+---
+
+
+<Layout>
+  <section class="fixed w-screen h-screen z-0">
+    <div
+      class="bolita--1 absolute bg-pink-600/20 w-60 h-full rounded-full -left-30 top-0 blur-3xl"
+    >
+    </div>
+    <div
+      class="bolita--2 absolute bg-teal-200/20 w-60 h-full rounded-full -right-30 top-0 blur-3xl"
+    >
+    </div>
+    <div class="bolita--3"></div>
+  </section>
+  <header
+    class="w-full h-20 flex items-center justify-center from-stone-800/70 via-stone-400/70 to-transparent bg-gradient-to-b sticky top-0 z-40"
+  >
+    <h1
+      class="text-4xl font-black bg-gradient-to-r from-rose-100 to-teal-100 bg-clip-text text-transparent"
+    >
+      Poke Arias
+    </h1>
+  </header>
+  <main
+    class="flex flex-wrap justify-center items-center  gap-x-4 w-full min-h-[85vh] px-2 md:py-8 gap-y-4 relative "
+  >
+    {page.data.map((pokemon) => <PokemonCard pokemon={pokemon} />)}
+  </main>
+  <div
+    class="fixed w-screen h-screen flex items-center justify-between inset-0 px-4  z-[1000] pointer-events-none"
+  >
+    <a href={page.url.prev} class={`${page.url.prev ? 'text-black' :'text-red-900 opacity-35'} z-[1000] pointer-events-auto `}>
+      <svg  xmlns="http://www.w3.org/2000/svg"  width="50"  height="50"  viewBox="0 0 24 24"  fill="currentColor"  class="drop-shadow-2xl shadow-black icon icon-tabler icons-tabler-filled icon-tabler-square-rounded-arrow-left"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 2l.324 .001l.318 .004l.616 .017l.299 .013l.579 .034l.553 .046c4.785 .464 6.732 2.411 7.196 7.196l.046 .553l.034 .579c.005 .098 .01 .198 .013 .299l.017 .616l.005 .642l-.005 .642l-.017 .616l-.013 .299l-.034 .579l-.046 .553c-.464 4.785 -2.411 6.732 -7.196 7.196l-.553 .046l-.579 .034c-.098 .005 -.198 .01 -.299 .013l-.616 .017l-.642 .005l-.642 -.005l-.616 -.017l-.299 -.013l-.579 -.034l-.553 -.046c-4.785 -.464 -6.732 -2.411 -7.196 -7.196l-.046 -.553l-.034 -.579a28.058 28.058 0 0 1 -.013 -.299l-.017 -.616c-.003 -.21 -.005 -.424 -.005 -.642l.001 -.324l.004 -.318l.017 -.616l.013 -.299l.034 -.579l.046 -.553c.464 -4.785 2.411 -6.732 7.196 -7.196l.553 -.046l.579 -.034c.098 -.005 .198 -.01 .299 -.013l.616 -.017c.21 -.003 .424 -.005 .642 -.005zm.707 5.293a1 1 0 0 0 -1.414 0l-4 4a1.037 1.037 0 0 0 -.2 .284l-.022 .052a.95 .95 0 0 0 -.06 .222l-.008 .067l-.002 .063v-.035v.073a1.034 1.034 0 0 0 .07 .352l.023 .052l.03 .061l.022 .037a1.2 1.2 0 0 0 .05 .074l.024 .03l.073 .082l4 4l.094 .083a1 1 0 0 0 1.32 -.083l.083 -.094a1 1 0 0 0 -.083 -1.32l-2.292 -2.293h5.585l.117 -.007a1 1 0 0 0 -.117 -1.993h-5.585l2.292 -2.293l.083 -.094a1 1 0 0 0 -.083 -1.32z" fill="currentColor" stroke-width="0" /></svg>
+    </a>
+    <a href={page.url.next} class={`${page.url.next ? 'text-black' :'text-red-900 opacity-35'} z-[1000] pointer-events-auto `}>
+      <svg  xmlns="http://www.w3.org/2000/svg"  width="50"  height="50"  viewBox="0 0 24 24"  fill="currentColor"  class=" drop-shadow-2xl shadow-black icon icon-tabler icons-tabler-filled icon-tabler-square-rounded-arrow-right"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M12 2c-.218 0 -.432 .002 -.642 .005l-.616 .017l-.299 .013l-.579 .034l-.553 .046c-4.785 .464 -6.732 2.411 -7.196 7.196l-.046 .553l-.034 .579c-.005 .098 -.01 .198 -.013 .299l-.017 .616l-.004 .318l-.001 .324c0 .218 .002 .432 .005 .642l.017 .616l.013 .299l.034 .579l.046 .553c.464 4.785 2.411 6.732 7.196 7.196l.553 .046l.579 .034c.098 .005 .198 .01 .299 .013l.616 .017l.642 .005l.642 -.005l.616 -.017l.299 -.013l.579 -.034l.553 -.046c4.785 -.464 6.732 -2.411 7.196 -7.196l.046 -.553l.034 -.579c.005 -.098 .01 -.198 .013 -.299l.017 -.616l.005 -.642l-.005 -.642l-.017 -.616l-.013 -.299l-.034 -.579l-.046 -.553c-.464 -4.785 -2.411 -6.732 -7.196 -7.196l-.553 -.046l-.579 -.034a28.058 28.058 0 0 0 -.299 -.013l-.616 -.017l-.318 -.004l-.324 -.001zm.613 5.21l.094 .083l4 4a.927 .927 0 0 1 .097 .112l.071 .11l.054 .114l.035 .105l.03 .148l.006 .118l-.003 .075l-.017 .126l-.03 .111l-.044 .111l-.052 .098l-.074 .104l-.073 .082l-4 4a1 1 0 0 1 -1.497 -1.32l.083 -.094l2.292 -2.293h-5.585a1 1 0 0 1 -.117 -1.993l.117 -.007h5.585l-2.292 -2.293a1 1 0 0 1 -.083 -1.32l.083 -.094a1 1 0 0 1 1.32 -.083z" fill="currentColor" stroke-width="0" /></svg>
+    </a>
+  </div>
+</Layout>
+
+<script>
+  function Main() {
+    observerPokemonCard();
+  }
+
+  const observerPokemonCard = () => {
+    const pokemonCardImages = document.querySelectorAll(".pokemon-card-image");
+
+    const observerPokemon = new IntersectionObserver(
+      (entries, observer) => {
+        entries.forEach((entry) => {
+          if (
+            entry.isIntersecting &&
+            entry.target instanceof HTMLImageElement
+          ) {
+            const dataSrc = entry.target.getAttribute("data-src");
+            if (dataSrc) {
+              entry.target.src = dataSrc;
+              observer.unobserve(entry.target);
+            }
+          }
+        });
+      },
+      {
+        root: document.querySelector("#scrollArea"),
+        rootMargin: "20px",
+        threshold: 1.0,
+      }
+    );
+
+    pokemonCardImages.forEach((pokemonCardImage) => {
+      observerPokemon.observe(pokemonCardImage);
+    });
+  };
+
+  document.addEventListener("astro:page-load", Main);
+</script>

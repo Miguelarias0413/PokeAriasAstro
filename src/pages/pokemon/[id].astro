@@ -84,7 +84,7 @@ function getSVGStats(statName :string){
         <div class="bolita--3  w-40 h-40 absolute rounded-full bg-blue-300 top-[30%] left-[40%]  mix-blend-multiply animate-breathe blur-2xl"></div>
     </section> -->
     <header class={` fixed w-full h-20 flex items-center justify-center from-${bgColor} to-transparent bg-gradient-to-b  top-0 z-[100]`}>
-        <a class="absolute left-4 ml-4 cursor-pointer text-white" href="/"> 
+        <a class="absolute left-4 ml-4 cursor-pointer text-white" onclick="history.back()"> 
           
             <svg  class="h-10 w-10 drop-shadow-2xl"  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none" stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-arrow-back-up"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" /></svg>
         </a>
@@ -194,7 +194,7 @@ function getSVGStats(statName :string){
                     {pokemon.stats.map((stat: { stat: { name: string }, base_stat: number }) => {
                         return (
                             <div class="w-full h-10 flex items-center justify-center">
-                                <h3 class={`w-1/5 y text-center ${textColor} flex items-center justify-center `}><Fragment set:html={getSVGStats(stat.stat.name)} /></h3>
+                                <h3 class={`w-1/5 y text-center ${textColor} flex items-center justify-center font-bold gap-1 `}><Fragment set:html={getSVGStats(stat.stat.name)} />{stat.base_stat}</h3>
                                 
                                 <div class="w-4/5 h-3 bg-gray-300 rounded-full">
                                     <div class={` h-full ${secondBgcolor}  rounded-full`} style={`width:${stat.base_stat > 100 ? 100 : stat.base_stat }%;`}></div>

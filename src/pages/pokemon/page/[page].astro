@@ -30,7 +30,6 @@ export async function getStaticPaths({ paginate }: { paginate: Function }) {
     throw error;
   }
 
-  console.log(data.results);
 
   async function fetchInstancedPokemon(
     pokemonName: Result["name"]
@@ -69,15 +68,18 @@ export async function getStaticPaths({ paginate }: { paginate: Function }) {
     return pokemon;
   }
 
+    
+    const PokemonPromises : Promise<IPokemonCard>[] = await data.results.map(  (result) =>  fetchInstancedPokemon(result.name))
+
   const pokemons = await Promise.all(
-    data.results.map( async (result) => await fetchInstancedPokemon(result.name))
+    PokemonPromises
   );
 
   return paginate(pokemons, { pageSize: 16 });
 }
 
 const { page } = Astro.props as {
-  page: { data: IPokemonCard[]; url: { prev?: string; next?: string } };
+  page: { data: IPokemonCard[]; url: { prev?: string; next?: string } ;  currentPage: number;};
 };
 ---
 
@@ -98,9 +100,9 @@ const { page } = Astro.props as {
     class="w-full h-20 flex items-center justify-center from-stone-800/70 via-stone-400/70 to-transparent bg-gradient-to-b sticky top-0 z-40"
   >
     <h1
-      class="text-4xl font-black bg-gradient-to-r from-rose-100 to-teal-100 bg-clip-text text-transparent"
+      class="text-4xl font-black bg-gradient-to-br from-white via-stone-700 to-stone-800 bg-clip-text text-transparent uppercase"
     >
-      Poke Arias
+      Poke Arias <span class="  bg-gradient-to-bl from-white via-stone-300 to-stone-800  bg-clip-text text-transparent h-fit "> #{page.currentPage} </span>
     </h1>
   </header>
   <main
@@ -120,7 +122,7 @@ const { page } = Astro.props as {
   </div>
 </Layout>
 
-<script>
+<!-- <script>
   function Main() {
     observerPokemonCard();
   }
@@ -145,7 +147,7 @@ const { page } = Astro.props as {
       },
       {
         root: document.querySelector("#scrollArea"),
-        rootMargin: "20px",
+        rootMargin: "0px",
         threshold: 1.0,
       }
     );
@@ -156,4 +158,4 @@ const { page } = Astro.props as {
   };
 
   document.addEventListener("astro:page-load", Main);
-</script>
+</script> -->

@@ -16,7 +16,7 @@ const {bgColor, textColor} = getPokemonColors(pokemon );
 <!-- bg-black/70 -->
 <article
   transition:name={pokemon.name}
-  class={`${bgColor} w-30 h-30 sm:w-40 sm:h-40      hover:brightness-105 hover:backdrop-blur-sm relative overflow-hidden shrink-0 flex items-center justify-center  rounded-2xl`}
+  class={`${bgColor} w-36 h-36 sm:w-40 sm:h-40      hover:brightness-105 hover:backdrop-blur-sm relative overflow-hidden shrink-0 flex items-center justify-center  rounded-2xl`}
 >
 <a href={`/pokemon/${pokemon.id}`} data-astro-prefetch="hover">
     <img src={`${pokemon.image}`} alt="" class="pokemon-card-image h-2/4 select-none" />
